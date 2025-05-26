@@ -1,14 +1,19 @@
 # Release-Note-Automation
 
-Version Control and Automation using bump2version -Python
-Every time you push to the main branch, your project’s version should update automatically based on the type of change:
-•	Major: Breaking changes → 1.0.0 → 2.0.0
-•	Minor: New feature → 1.0.0 → 1.1.0
-•	Patch: Bug fixes → 1.0.0 → 1.0.1
-Note - We will use the Commit Message to choose the Bump Version.
+## 🔄 Version Control and Automation with `bump2version`
 
-Commit Message	Result
-feat: add login endpoint	minor bump
-fix: correct typo in README	patch bump
-BREAKING CHANGE: overhaul API	major bump
-chore: update docs|| Any Commit	❌ no bump
+This project uses **`bump2version`** for automated semantic versioning based on **commit messages**. Whenever you push to the `main` branch, the version updates automatically depending on the type of change.
+
+### 📌 Version Bump Rules
+
+```bash
+# Commit Message                          | Version Bump       | Resulting Version
+feat: add login endpoint                 => Minor Bump        # 1.0.0 → 1.1.0
+fix: correct typo in README              => Patch Bump        # 1.0.0 → 1.0.1
+BREAKING CHANGE: overhaul API           => Major Bump        # 1.0.0 → 2.0.0
+chore: update docs  (or any other)       => ❌ No Bump        # No version change
+```
+
+> 🔍 **Note:** Only commits that match the above patterns will trigger a version bump. All other commits will be ignored by `bump2version`.
+
+**Note:** Do Git Pull on your Local system or check git status after updating the Version.
