@@ -38,6 +38,7 @@ jobs:
       - name: Decide Version Bump Type
         id: bump_type
         run: |
+          set -e
           COMMIT_MSG="${{ steps.commit.outputs.message }}"
           echo "Commit Message: $COMMIT_MSG"
 
