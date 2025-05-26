@@ -18,10 +18,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Dependencies
+      - name: Install bump2version
         run: pip install bump2version
 
-      # - name: Set Git Identity
+      # - name: Configure Git
       #   run: |
       #     git config --global user.name "github-actions[bot]"
       #     git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -29,7 +29,11 @@ jobs:
       - name: Get Latest Commit Message
         id: commit
         run: |
-          echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+          COMMIT_MSG="$(git log -1 --pretty=%B)"
+          COMMIT_MSG="${COMMIT_MSG//'%'/'%25'}"
+          COMMIT_MSG="${COMMIT_MSG//$'\n'/'%0A'}"
+          COMMIT_MSG="${COMMIT_MSG//$'\r'/'%0D'}"
+          echo "message=$COMMIT_MSG" >> $GITHUB_OUTPUT
 
       - name: Decide Version Bump Type
         id: bump_type
@@ -44,13 +48,10 @@ jobs:
           elif echo "$COMMIT_MSG" | grep -q '^fix'; then
             echo "bump=patch" >> $GITHUB_OUTPUT
           else
-            echo "No version bump triggered."
             echo "bump=none" >> $GITHUB_OUTPUT
-          fi
 
       - name: Run bump2version
         if: steps.bump_type.outputs.bump != 'none'
         run: |
-          echo "Bumping ${{ steps.bump_type.outputs.bump }} version"
           bump2version ${{ steps.bump_type.outputs.bump }}
           git push origin main --follow-tags
