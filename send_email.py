@@ -5,7 +5,7 @@ from email.message import EmailMessage
 from docx import Document
 
 # --- CONFIG ---
-INIT_PATH = "your_package/__init__.py"  # Update path as needed
+INIT_PATH = "__init__.py"  # Update path as needed
 PREV_VERSION_JSON = "prev_version.json"
 DOCX_PATH = "Release_Notes/Website_Release_Note.docx"
 
