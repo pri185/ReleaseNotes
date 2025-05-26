@@ -1,0 +1,56 @@
+name: Auto Version Bump
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install bump2version
+
+      # - name: Set Git Identity
+      #   run: |
+      #     git config --global user.name "github-actions[bot]"
+      #     git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Get Latest Commit Message
+        id: commit
+        run: |
+          echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+
+      - name: Decide Version Bump Type
+        id: bump_type
+        run: |
+          COMMIT_MSG="${{ steps.commit.outputs.message }}"
+          echo "Commit Message: $COMMIT_MSG"
+
+          if echo "$COMMIT_MSG" | grep -q 'BREAKING CHANGE'; then
+            echo "bump=major" >> $GITHUB_OUTPUT
+          elif echo "$COMMIT_MSG" | grep -q '^feat'; then
+            echo "bump=minor" >> $GITHUB_OUTPUT
+          elif echo "$COMMIT_MSG" | grep -q '^fix'; then
+            echo "bump=patch" >> $GITHUB_OUTPUT
+          else
+            echo "No version bump triggered."
+            echo "bump=none" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run bump2version
+        if: steps.bump_type.outputs.bump != 'none'
+        run: |
+          echo "Bumping ${{ steps.bump_type.outputs.bump }} version"
+          bump2version ${{ steps.bump_type.outputs.bump }}
+          git push origin main --follow-tags
