@@ -21,10 +21,10 @@ jobs:
       - name: Install bump2version
         run: pip install bump2version
 
-      # - name: Configure Git
-      #   run: |
-      #     git config --global user.name "github-actions[bot]"
-      #     git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Configure Git
+        run: |
+          git config --global user.name "Abhishek"
+          git config --global user.email "abhishek.shekhawat.1920@gmail.com"
 
       - name: Get Latest Commit Message
         id: commit
