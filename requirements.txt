@@ -1,2 +1,4 @@
+bump2version==1.0.1
+lxml==5.4.0
 python-docx==1.1.2
-
+typing_extensions==4.13.2
