@@ -38,18 +38,21 @@ jobs:
       - name: Decide Version Bump Type
         id: bump_type
         run: |
-          set -e
-          COMMIT_MSG="${{ steps.commit.outputs.message }}"
-          echo "Commit Message: $COMMIT_MSG"
+          {
+            COMMIT_MSG="${{ steps.commit.outputs.message }}"
+            echo "Commit Message: $COMMIT_MSG"
 
-          if echo "$COMMIT_MSG" | grep -q 'BREAKING CHANGE'; then
-            echo "bump=major" >> $GITHUB_OUTPUT
-          elif echo "$COMMIT_MSG" | grep -q '^feat'; then
-            echo "bump=minor" >> $GITHUB_OUTPUT
-          elif echo "$COMMIT_MSG" | grep -q '^fix'; then
-            echo "bump=patch" >> $GITHUB_OUTPUT
-          else
-            echo "bump=none" >> $GITHUB_OUTPUT
+            if echo "$COMMIT_MSG" | grep -q 'BREAKING CHANGE'; then
+              echo "bump=major" >> $GITHUB_OUTPUT
+            elif echo "$COMMIT_MSG" | grep -q '^feat'; then
+              echo "bump=minor" >> $GITHUB_OUTPUT
+            elif echo "$COMMIT_MSG" | grep -q '^fix'; then
+              echo "bump=patch" >> $GITHUB_OUTPUT
+            else
+              echo "bump=none" >> $GITHUB_OUTPUT
+            fi
+          }
+
 
       - name: Run bump2version
         if: steps.bump_type.outputs.bump != 'none'
