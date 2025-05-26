@@ -17,3 +17,5 @@ chore: update docs  (or any other)       => ❌ No Bump        # No version chan
 > 🔍 **Note:** Only commits that match the above patterns will trigger a version bump. All other commits will be ignored by `bump2version`.
 
 **Note:** Do Git Pull on your Local system or check git status after updating the Version.
+
+test
