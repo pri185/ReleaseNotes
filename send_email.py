@@ -1,11 +1,13 @@
 import os
 import json
 import smtplib
+import html
 from email.message import EmailMessage
 from docx import Document
+from datetime import datetime, timezone, timedelta
 
 # --- CONFIG ---
-INIT_PATH = "__init__.py"  # Update path as needed
+INIT_PATH = "__init__.py"
 PREV_VERSION_JSON = "prev_version.json"
 DOCX_PATH = "Release_Notes/Website_Release_Note.docx"
 
@@ -42,8 +44,16 @@ def determine_update_type(prev, current):
         return "Unknown"
 
 def read_docx(file_path):
-    doc = Document(file_path)
-    return "\n".join([para.text for para in doc.paragraphs])
+    try:
+        doc = Document(file_path)
+        return "\n".join([para.text for para in doc.paragraphs if para.text.strip()])
+    except Exception as e:
+        print(f"❌ Failed to read DOCX: {e}")
+        return "(Could not read release note.)"
+
+def get_current_ist_time():
+    IST = timezone(timedelta(hours=5, minutes=30))
+    return datetime.now(IST).strftime("%Y-%m-%d %H:%M IST")
 
 
 # --- VERSION LOGIC ---
@@ -63,37 +73,45 @@ EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 EMAIL_RECEIVERS = os.getenv("EMAIL_RECEIVERS")
 
 if not all([EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECEIVERS]):
-    raise ValueError("Missing email environment configuration!")
+    raise ValueError("❌ Missing email environment configuration!")
 
 recipients = [email.strip() for email in EMAIL_RECEIVERS.split(",")]
 docx_content = read_docx(DOCX_PATH)
+escaped_content = html.escape(docx_content).replace("\n", "<br>")
+release_date = get_current_ist_time()
 
-# Compose email
-email_body = f"""🚀 A new release has been deployed!
-
-🆕 Version: {new_version}
-🔄 Update Type: {update_type}
-
-📄 Release Notes:
-{docx_content}
-
-We'd love your feedback or thoughts!
+# Compose HTML email
+html_intro = f"""
+<b>🚀 New Website Release Deployed!</b><br><br>
+<b>🆕 Version:</b> {new_version}<br>
+<b>🔄 Update Type:</b> {update_type}<br>
+<b>🗓️ Release Date:</b> {release_date}<br><br>
+<b>📄 Release Notes:</b><br>
 """
+email_body = html_intro + escaped_content
 
+# Compose EmailMessage
 msg = EmailMessage()
 msg['Subject'] = f'🚀 Website Release Note - Version {new_version}'
 msg['From'] = EMAIL_SENDER
 msg['To'] = ", ".join(recipients)
-msg.set_content(email_body)
+
+# Add plain text fallback + HTML version
+msg.set_content("This email contains release notes. Please use an HTML-capable email client.")
+msg.add_alternative(email_body, subtype='html')
 
 # Attach the docx
-with open(DOCX_PATH, 'rb') as f:
-    msg.add_attachment(
-        f.read(),
-        maintype='application',
-        subtype='vnd.openxmlformats-officedocument.wordprocessingml.document',
-        filename=os.path.basename(DOCX_PATH)
-    )
+try:
+    with open(DOCX_PATH, 'rb') as f:
+        msg.add_attachment(
+            f.read(),
+            maintype='application',
+            subtype='vnd.openxmlformats-officedocument.wordprocessingml.document',
+            filename=os.path.basename(DOCX_PATH)
+        )
+    print("📎 Attached DOCX release note.")
+except Exception as e:
+    print(f"❌ Failed to attach DOCX: {e}")
 
 # Send email
 try:
@@ -102,6 +120,6 @@ try:
         smtp.send_message(msg)
         print(f"✅ Email sent to: {', '.join(recipients)}")
 except smtplib.SMTPAuthenticationError as e:
-    print("❌ Auth Error:", e)
+    print("❌ Authentication Error:", e)
 except Exception as e:
     print("❌ Sending Error:", e)
