@@ -20,4 +20,4 @@ chore: update docs  (or any other)       => ❌ No Bump        # No version chan
 
 test2
 
-Test 3 -  BY PRIYAM
+Test 3 -   PRIYAM
