@@ -9,7 +9,7 @@ from datetime import datetime, timezone, timedelta
 # --- CONFIG ---
 INIT_PATH = "__init__.py"
 PREV_VERSION_JSON = "prev_version.json"
-DOCX_PATH = "Release_Notes/Website_Release_Note.docx"
+DOCX_PATH = "Website_Release_Note.docx"
 
 # --- UTIL FUNCTIONS ---
 
