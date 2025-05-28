@@ -46,3 +46,8 @@ migrations/
 dist/
 build/
 *.spec
+
+# Local email configuration
+email_credentials.json
+email_receivers.json
+secret.key
