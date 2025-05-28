@@ -100,18 +100,7 @@ msg['To'] = ", ".join(recipients)
 msg.set_content("This email contains release notes. Please use an HTML-capable email client.")
 msg.add_alternative(email_body, subtype='html')
 
-# Attach the docx
-try:
-    with open(DOCX_PATH, 'rb') as f:
-        msg.add_attachment(
-            f.read(),
-            maintype='application',
-            subtype='vnd.openxmlformats-officedocument.wordprocessingml.document',
-            filename=os.path.basename(DOCX_PATH)
-        )
-    print("📎 Attached DOCX release note.")
-except Exception as e:
-    print(f"❌ Failed to attach DOCX: {e}")
+# ✅ NO ATTACHMENT SECTION HERE
 
 # Send email
 try:
