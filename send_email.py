@@ -66,13 +66,13 @@ update_type = determine_update_type(prev_version, new_version)
 write_current_version(PREV_VERSION_JSON, new_version)
 
 # --- LOAD CONFIGS FROM ENV ---
-EMAIL_SENDER = os.environ.get("EMAIL_USERNAME")
+EMAIL_SENDER = os.environ.get("EMAIL_SENDER")
 EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 EMAIL_RECEIVERS = os.environ.get("EMAIL_RECEIVERS", "")
 recipients = [r.strip() for r in EMAIL_RECEIVERS.split(",") if r.strip()]
 
 if not EMAIL_SENDER or not EMAIL_PASSWORD:
-    raise EnvironmentError("❌ EMAIL_USERNAME or EMAIL_PASSWORD is not set in environment!")
+    raise EnvironmentError("❌ EMAIL_SENDER or EMAIL_PASSWORD is not set in environment!")
 
 if not recipients:
     raise ValueError("❌ No valid recipients found in EMAIL_RECEIVERS!")
